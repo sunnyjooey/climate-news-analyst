@@ -36,7 +36,7 @@ def get_news_from_searchpage(searchpage_content, session):
     news = []
     for article_link in link_finder.find_all('a', class_ = 'nb-doc-link'):
         full_url = urllib.parse.urljoin(URL_prefix, article_link.get('href'))
-        logging.debug(full_url)
+        logging.info(full_url)
         news.append(extract_news(session.get(full_url).text))
     return pandas.DataFrame(news)
 
@@ -72,7 +72,7 @@ def  get_all_news(language='English', year='2017', country='USA', sourcetype='Ne
     max_pages = math.ceil(max_results/results_per_page)
     max_pages=3
     for page in range(1,max_pages):
-        logging.DEBUG('New page')
+        logging.info('New page')
         response = session.get(get_search_query_url(language=language, year=year, country=country,
                                                     sourcetype=sourcetype, searchterm=searchterm, page=page), 
                                headers = searchHeader)

@@ -1,6 +1,7 @@
 import requests
 import pandas
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 import re
 import urllib
 import math
@@ -30,14 +31,14 @@ def get_max_results(page_content):
     number = int(number_str.replace(',',''))
     return number
 
-def get_news_from_searchpage(searchpage_content, session):
+def get_news_from_searchpage(searchpage_content, session, country):
     URL_prefix = 'http://infoweb.newsbank.com.proxy.uchicago.edu'
     link_finder = BeautifulSoup(searchpage_content, 'lxml')
     news = []
     for article_link in link_finder.find_all('a', class_ = 'nb-doc-link'):
         full_url = urllib.parse.urljoin(URL_prefix, article_link.get('href'))
         logging.info(full_url)
-        news.append(extract_news(session.get(full_url).text))
+        news.append(extract_news(session.get(full_url).text, country))
     return pandas.DataFrame(news)
 
 def  get_all_news(language='English', year='2017', country='USA', sourcetype='Newspaper', 
@@ -68,7 +69,7 @@ def  get_all_news(language='English', year='2017', country='USA', sourcetype='Ne
     
     max_results = get_max_results(response.text)
     
-    all_news = get_news_from_searchpage(response.text, session)
+    all_news = get_news_from_searchpage(response.text, session, country)
     max_pages = math.ceil(max_results/results_per_page)
     max_pages=3
     for page in range(1,max_pages):
@@ -80,40 +81,46 @@ def  get_all_news(language='English', year='2017', country='USA', sourcetype='Ne
      
     return all_news
 
-def extract_news(news_article_html):
-    soup = BeautifulSoup(news_article_html, 'lxml')
-    parsDict = {}
+
+def extract_news(html, country):
+    
+    article_dict = {'country': country}
+    soup = BeautifulSoup(html, 'lxml')
+
     # title
     title0 = soup.find_all('div', {'class' : 'title'})
-    title1 = title0[0].text.replace('Hide Details', '')
+    title1 = title0[0].text.replace('Hide Details', '') #cleaning
     title = re.sub(r'\<.*\>', '', title1)
-    parsDict['title'] = (title)
+    article_dict['title'] = title
 
     # text
     body = soup.find_all('div', {'class' : 'body'})
-    text0 = body[0].text
-    text1 = re.sub(r'\n', ' ', text0) #Take out new lines
-    text2 = re.sub(r"Source- .+","", text1) #for Times of India
-    text = re.sub(r"© .+","", text2) #for allAfrica
-    parsDict['text'] = (text)
-
+    text0 = "".join([t for t in body[0].contents if type(t)==NavigableString]) #get text only from content, not children
+    text1 = re.sub(r"Source- .+","", text0) #cleaning
+    text2 = re.sub(r"© .+","", text1) #cleaning
+    text3 = re.sub(r"(STORY CAN END HERE)","", text2) #cleaning 
+    text4 = re.sub(r"(EDITORS: STORY CAN END HERE)","", text3) #cleaning
+    text5 = re.sub(r"(EDITORS: )","", text4) #cleaning
+    text = re.sub(r"^([A-Z]+)", "", text5) #take out first word if all caps (it is a location)
+    article_dict['text'] = text
+    
     # source & date
     source = soup.find_all('div', {'class' : 'source'})
     date = re.findall(r'(?:January|February|March|April|May|June|July|August|September|October|November|December)\s\d{1,2},\s\d{4}', source[0].text)
-    parsDict['date'] = (date[0])
-
-    pat2 = re.compile(r"(.*?)-", re.M)
+    article_dict['date'] = date[0]
+    pat2 = re.compile(r"(.*?)-\s", re.M)
     newssource = pat2.findall(source[0].text)
-    parsDict['source'] = (newssource[0])
+    article_dict['source'] = newssource[0] 
 
-    meta = soup.find_all('span', {'class' : 'val'})
-    # author    
-    author0 = meta[0]
-    author = re.sub(r'\<.*\>', '', author0.text) #Take out <>
-    parsDict['author'] = (author)
+    # author  
+    author0 = soup.find_all('span', {'class' : 'val'})
+    author = re.sub(r'\<.*\>', '', author0[0].text) #Take out <>
+    article_dict['author'] = author
 
     # section
-    section0 = meta[1]
-    section = re.sub(r'\<.*\>', '', section0.text) #Take out <>
-    parsDict['section'] = (section)
-    return parsDict
+    section0 = soup.find_all('span', {'class' : 'lbl'}, string="Section: ")
+    section = section0[0].next_element.next_element.next_element.text
+    #section = re.sub(r'\<.*\>', '', section0.text) #Take out <>
+    article_dict['section'] = section
+    
+    return article_dict

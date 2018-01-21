@@ -70,15 +70,20 @@ def  get_all_news(language='English', year='2017', country='USA', sourcetype='Ne
     max_results = get_max_results(response.text)
     
     all_news = get_news_from_searchpage(response.text, session, country)
-    max_pages = math.ceil(max_results/results_per_page)
-    max_pages=3
+    
+    if limit:
+        max_pages = math.ceil(limit/results_per_page)
+    else:
+        max_pages = math.ceil(max_results/results_per_page)
+
     for page in range(1,max_pages):
         logging.info('New page')
+        logging.debug('Current newscount: {}'.format(len(all_news)))
         response = session.get(get_search_query_url(language=language, year=year, country=country,
                                                     sourcetype=sourcetype, searchterm=searchterm, page=page), 
                                headers = searchHeader)
-        all_news.append(get_news_from_searchpage(response.text, session))
-     
+        all_news = pandas.concat([get_news_from_searchpage(response.text, session), all_news], ignore_index=True)
+    
     return all_news
 
 

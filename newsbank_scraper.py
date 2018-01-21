@@ -124,8 +124,10 @@ def extract_news(html, country):
 
     # section
     section0 = soup.find_all('span', {'class' : 'lbl'}, string="Section: ")
-    section = section0[0].next_element.next_element.next_element.text
-    #section = re.sub(r'\<.*\>', '', section0.text) #Take out <>
-    article_dict['section'] = section
+    try: 
+        section = section0[0].next_element.next_element.next_element.text
+        article_dict['section'] = section
+    except:
+        article_dict['section'] = ''
     
     return article_dict

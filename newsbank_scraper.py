@@ -106,7 +106,7 @@ def extract_news(html, country):
     text3 = re.sub(r"(STORY CAN END HERE)","", text2) #cleaning 
     text4 = re.sub(r"(EDITORS: STORY CAN END HERE)","", text3) #cleaning
     text5 = re.sub(r"(EDITORS: )","", text4) #cleaning
-    text = re.sub(r"^([A-Z]+)", "", text5) #take out first word if all caps (it is a location)
+    text = re.sub(r"^([A-Z]{2,}\s?[A-Z]{2,})", "", text5) #take out first word if all caps (it is a location)
     article_dict['text'] = text
     
     # source & date

@@ -82,7 +82,7 @@ def  get_all_news(language='English', year='2017', country='USA', sourcetype='Ne
         response = session.get(get_search_query_url(language=language, year=year, country=country,
                                                     sourcetype=sourcetype, searchterm=searchterm, page=page), 
                                headers = searchHeader)
-        all_news = pandas.concat([get_news_from_searchpage(response.text, session), all_news], ignore_index=True)
+        all_news = pandas.concat([get_news_from_searchpage(response.text, session, country), all_news], ignore_index=True)
     
     return all_news
 

@@ -1,3 +1,12 @@
+import os
+import pandas
+from bs4 import BeautifulSoup
+from bs4.element import NavigableString
+import re
+import urllib
+import math
+import jellyfish
+
 def extract_news(html, country):
     
     article_dict = {'filename': html.name, 'country': country}
@@ -69,6 +78,7 @@ def getText():
     return pandas.DataFrame(articleList)
 
 df = getText()
+df.to_pickle('news_df_feb18.pkl')
 
 def findDuplicates(df):
     dups = []
@@ -79,7 +89,7 @@ def findDuplicates(df):
                     score = jellyfish.levenshtein_distance(df.loc[i, 'text'], df.loc[j, 'text'])
                     dups.append((i,j,score))
 
-    PIK = "duplicate_tuples.dat"
+    PIK = "duplicate_tuples_feb18.dat"
     with open(PIK, "wb") as f:
         pickle.dump(dups, f)
 

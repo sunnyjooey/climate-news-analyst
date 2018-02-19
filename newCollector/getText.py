@@ -69,4 +69,18 @@ def getText():
     return pandas.DataFrame(articleList)
 
 df = getText()
-#df.to_csv('news_df.csv')
+
+def findDuplicates(df):
+    dups = []
+    for i in range(len(df)-1):
+        for j in range(len(df)):
+            if i < j:
+                if df.loc[i, 'country'] == df.loc[j, 'country']:
+                    score = jellyfish.levenshtein_distance(df.loc[i, 'text'], df.loc[j, 'text'])
+                    dups.append((i,j,score))
+
+    PIK = "duplicate_tuples.dat"
+    with open(PIK, "wb") as f:
+        pickle.dump(dups, f)
+
+findDuplicates(df)

@@ -40,6 +40,7 @@ def extract_news(html, country):
     # take out first word if all caps (it is a location)
     text1 = re.sub(r"^([A-Z]{2,}\s?[A-Z]{2,})", "", text0)
     # take out from end
+    text1 = re.sub(r'©.*$', '', text1)
     text2 = re.sub(r"\S*@\S*\s?", "ZXCVB", text1) #email
     text3 = re.sub(r"ZXCVB(.*)|Published by HT (.*)|Caption (.*)|Copyright\s\((.*)|Copyright: (.*)|Source- (.*)|Digital Content Services (.*)|Syndication with permission (.*)|www(.*)|http(.*)", "", text2)
     # take out from middle 

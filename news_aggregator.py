@@ -51,7 +51,7 @@ def extract_news(html, country):
     # take out all dots that are within parentheses (semantic parser dislikes that)
     def dots_in_parentheses(match):
         return re.sub(r'\.', r';', match.group())
-    parens = re.compile(r'(?<=\().*?\..*?(?=\))')
+    parens = re.compile(r'(?<=\()[^\)]*?\..[^\(]*?(?=\))')
     text = parens.sub(dots_in_parentheses, text)
     article_dict['text'] = text
 

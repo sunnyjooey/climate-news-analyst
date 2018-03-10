@@ -1,22 +1,21 @@
 1.	Word / Document embeddings
--	inter and intra country average document-document similarity scores
--	heatmap --> anything interesting?
+    A.	Inter and intra country average document-document similarity scores
+    -	heatmap --> anything interesting?
+    B.	Change in word embeddings before/after June
+    C.	Dimensions
+    -	Attitudes of different countries in different dimensions
+    -	How does it compare to topic modeling results??
 
 2.	Topic modeling
-A.	Topics: try different numbers
--	Top words per topic
--	Distribution of each topic in each country 
--	Change in topic before/after June
-
-B.	Attitudes
--	Attitudes of different countries in different spheres
--	How does it compare to topic modeling results?
+    Topics: try different numbers & parameter vals
+    -	Top words per topic
+    -	Distribution of each topic in each country 
 
 3.	Semantics
-For each topic “scene”
--	Top topic articles per country
--	What are the top Actor-Verb-Actors in the country and how does it compare?
+    For each topic “scene”
+    -	Top topic articles per country
+    -	What are the top Actor-Verb-Actors in the country and how does it compare?
 
 4.	Relationship to measures
--	Compare # of articles in sphere and CO2 emissions, GDP
--	Graphs
+    -	Compare # of articles in sphere and CO2 emissions, GDP
+    -	Graphs

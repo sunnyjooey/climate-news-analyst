@@ -53,6 +53,7 @@ def extract_news(html, country):
         return re.sub(r'\.', r';', match.group())
     parens = re.compile(r'(?<=\()[^\)]*?\..[^\(]*?(?=\))')
     text = parens.sub(dots_in_parentheses, text)
+    text = re.sub(r'\."', '".', text)
     article_dict['text'] = text
 
     # source & date
@@ -98,5 +99,15 @@ def aggregate_news_files():
     return pandas.DataFrame(article_list)
 
 df = aggregate_news_files()
+
+
+# Take out duplicates
+dups = pandas.read_pickle('to_delete_index.pkl')
+news_sorted = df.sort_values(by=['country','title'])
+news_sorted.reset_index(inplace=True)
+news_sorted.drop(['index'], axis=1, inplace=True)
+df = news_sorted.loc[~news_sorted.index.isin(dups)] 
+
+
 df.to_pickle(args.output)
 

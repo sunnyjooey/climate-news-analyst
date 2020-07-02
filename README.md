@@ -1,2 +1,3 @@
 # climate-news-analyst
-Please read the pdf by Sun-Joo Lee and Victor Vilchis Tella
+Please see the [presentation](https://drive.google.com/file/d/1J4lUi5AH3wteoS463pzP3QkNUXcV4783/view?usp=sharing) or the report `Lee_VilchisTella_Analysis.pdf` above.
+
